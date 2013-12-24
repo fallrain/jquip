@@ -1,4 +1,4 @@
-$['plug']("events", function($){
+jquip['plug']("events", function(jquip){
   var doc = document, handlers = {}, _jquid = 1;
   function jquid(el){
     return el._jquid || (el._jquid = _jquid++);
@@ -13,7 +13,7 @@ $['plug']("events", function($){
       };
       o.attachEvent('on' + type, o[type + fn]);
     }
-  } $['bind'] = bind;
+  } jquip['bind'] = bind;
   function unbind(o, type, fn){
     if (o.removeEventListener)
       o.removeEventListener(type, fn, false);
@@ -21,18 +21,18 @@ $['plug']("events", function($){
       o.detachEvent('on' + type, o[type + fn]);
       o[type + fn] = null;
     }
-  } $['unbind'] = unbind;
+  } jquip['unbind'] = unbind;
   function parseEvt(evt){
     var parts = ('' + evt).split('.');
     return {e: parts[0], ns: parts.slice(1).sort().join(' ')};
   }
   function matcherFor(ns){
-    return new RegExp('(?:^| )' + ns.replace(' ', ' .* ?') + '(?: |$)');
+    return new RegExp('(?:^| )' + ns.replace(' ', ' .* ?') + '(?: |jquip)');
   }
   function findHdls(el, evt, fn, sel){
     evt = parseEvt(evt);
     if (evt.ns) var m = matcherFor(evt.ns);
-    return $['_filter'](handlers[jquid(el)] || [], function(hdl){
+    return jquip['_filter'](handlers[jquid(el)] || [], function(hdl){
       return hdl
         && (!evt.e  || hdl.e == evt.e)
         && (!evt.ns || m.test(hdl.ns))
@@ -42,8 +42,8 @@ $['plug']("events", function($){
   }
   function addEvt(el, evts, fn, sel, delegate){
     var id = jquid(el), set = (handlers[id] || (handlers[id] = []));
-    $['_each'](evts.split(/\s/), function(evt){
-      var handler = $['extend'](parseEvt(evt), {fn: fn, sel: sel, del: delegate, i: set.length});
+    jquip['_each'](evts.split(/\s/), function(evt){
+      var handler = jquip['extend'](parseEvt(evt), {fn: fn, sel: sel, del: delegate, i: set.length});
       set.push(handler);
       bind(el, handler.e, delegate || fn);
     });
@@ -51,8 +51,8 @@ $['plug']("events", function($){
   }
   function remEvt(el, evts, fn, sel){
     var id = jquid(el);
-    $['_each']((evts || '').split(/\s/), function(evt){
-      $['_each'](findHdls(el, evt, fn, sel), function(hdl){
+    jquip['_each']((evts || '').split(/\s/), function(evt){
+      jquip['_each'](findHdls(el, evt, fn, sel), function(hdl){
         delete handlers[id][hdl.i];
         unbind(el, hdl.e, hdl.del || hdl.fn);
       });
@@ -60,8 +60,8 @@ $['plug']("events", function($){
   }
   var evtMethods = ['preventDefault', 'stopImmediatePropagation', 'stopPropagation'];
   function createProxy(evt){
-    var proxy = $['extend']({originalEvent: evt}, evt);
-    $['_each'](evtMethods, function(key){
+    var proxy = jquip['extend']({originalEvent: evt}, evt);
+    jquip['_each'](evtMethods, function(key){
       if(evt[key]){
         proxy[key] = function(){
           return evt[key].apply(evt, arguments);
@@ -70,8 +70,8 @@ $['plug']("events", function($){
     });
     return proxy;
   }
-  var p = $['fn'];
-  $['_each'](("blur focus focusin focusout load resize scroll unload click dblclick " +
+  var p = jquip['fn'];
+  jquip['_each'](("blur focus focusin focusout load resize scroll unload click dblclick " +
     "mousedown mouseup mousemove mouseover mouseout mouseenter mouseleave " +
     "change select submit keydown keypress keyup error").split(" "),
     function(name){
@@ -102,11 +102,11 @@ $['plug']("events", function($){
   p['delegate'] = function(sel, evt, cb){
     return this['each'](function(i, el){
       addEvt(el, evt, cb, sel, function(e){
-        var target = e.target||e.srcElement, nodes = $['$$'](sel, el);
-        while (target && $['_indexOf'](nodes, target) < 0)
+        var target = e.target||e.srcElement, nodes = jquip['$$'](sel, el);
+        while (target && jquip['_indexOf'](nodes, target) < 0)
           target = target.parentNode;
         if (target && !(target === el) && !(target === document)){
-          cb.call(target, $['extend'](createProxy(e||window.event), {
+          cb.call(target, jquip['extend'](createProxy(e||window.event), {
             currentTarget: target, liveFired: el
           }));
         }
@@ -119,11 +119,11 @@ $['plug']("events", function($){
     });
   };
   p['live'] = function(evt, cb){
-    $(doc.body)['delegate'](this['selector'], evt, cb);
+    jquip(doc.body)['delegate'](this['selector'], evt, cb);
     return this;
   };
   p['die'] = function(evt, cb){
-    $(doc.body)['undelegate'](this['selector'], evt, cb);
+    jquip(doc.body)['undelegate'](this['selector'], evt, cb);
     return this;
   };
 
@@ -149,5 +149,5 @@ $['plug']("events", function($){
                 } catch (e) { }
         });
     };
-  if (!$['init']) $(window)['bind']("load",$['onload']);
+  if (!jquip['init']) jquip(window)['bind']("load",jquip['onload']);
 });
