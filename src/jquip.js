@@ -1,5 +1,5 @@
 /*jshint sub:true, regexdash:true, laxbreak: true, expr: true*/
-window['$'] = window['jquip'] = (function(){
+window['jquip'] = (function(){
   var win = window,
       queryShimCdn = "http://cdnjs.cloudflare.com/ajax/libs/sizzle/1.4.4/sizzle.min.js",
       queryEngines = function(){ return win["Sizzle"] || win["qwery"]; },
